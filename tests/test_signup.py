@@ -5,7 +5,7 @@ from app.models import User
 from config import TestingConfig
 
 
-class APITests(unittest.TestCase):
+class SignUpTests(unittest.TestCase):
     def setUp(self):
         self.app = create_app(TestingConfig)
         self.client = self.app.test_client()
@@ -29,7 +29,7 @@ class APITests(unittest.TestCase):
         self.assertIsNotNone(response_body['token'])
 
         user = db.session.query(User).first()
-        self.assertNotEqual(user.password, password)
+        self.assertNotEqual(user.hash, password)
 
     def test_signup_without_username(self):
         password = 'password'
@@ -83,7 +83,3 @@ class APITests(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_body['message'],
                          'Username is already taken.')
-
-
-if __name__ == '__main__':
-    unittest.main()

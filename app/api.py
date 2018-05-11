@@ -9,6 +9,29 @@ from .models import User
 api = Blueprint('api', __name__)
 
 
+@api.route('/signin', methods=['POST'])
+def signin():
+    request_body = request.get_json()
+    username = request_body.get('username')
+    password = request_body.get('password')
+
+    if not username:
+        return jsonify(message='Username is missing.'), 400
+
+    if not password:
+        return jsonify(message='Password is missing.'), 400
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user:
+        return jsonify(message='Username does not exist.'), 404
+
+    if not user.check_password(password):
+        return jsonify(message='Incorrect password.'), 401
+
+    return jsonify(token=user.generate_jwt()), 200
+
+
 @api.route('/signup', methods=['POST'])
 def signup():
     request_body = request.get_json()
@@ -39,7 +62,4 @@ def signup():
     db.session.add(user)
     db.session.commit()
 
-    token = jwt.encode(
-        {'id': user.id}, current_app.config['JWT_SECRET'], algorithm='HS256').decode()
-
-    return jsonify(token=token), 201
+    return jsonify(token=user.generate_jwt()), 201
