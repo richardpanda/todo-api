@@ -3,12 +3,23 @@ import jwt
 from app import db
 from bcrypt import checkpw, gensalt, hashpw
 from flask import current_app
+from sqlalchemy.orm import relationship
+
+
+class Todo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.String(100))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return f'<Todo id={self.id} text={self.text} user_id={self.user_id}>'
 
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25), unique=True)
     hash = db.Column(db.String(60))
+    todos = relationship('Todo', backref='user')
 
     def __init__(self, username, password):
         self.username = username

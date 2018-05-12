@@ -1,5 +1,5 @@
 from app import create_app, db
-from app.models import User
+from app.models import Todo, User
 from flask_migrate import Migrate
 
 app = create_app()
@@ -8,4 +8,4 @@ migrate = Migrate(app, db)
 
 @app.shell_context_processor
 def make_shell_context():
-    return dict(db=db, User=User)
+    return dict(db=db, Todo=Todo, User=User)
