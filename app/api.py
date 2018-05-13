@@ -85,6 +85,14 @@ def signup():
     return jsonify(token=user.generate_jwt()), 201
 
 
+@api.route('/todos', methods=['GET'])
+@token_auth.login_required
+def get_todos():
+    todos = [todo.as_dict()
+             for todo in Todo.query.filter_by(user_id=g.user_id)]
+    return jsonify(todos=todos), 200
+
+
 @api.route('/todos', methods=['POST'])
 @token_auth.login_required
 def create_todo():

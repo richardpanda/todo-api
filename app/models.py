@@ -14,6 +14,9 @@ class Todo(db.Model):
     def __repr__(self):
         return f'<Todo id={self.id} text={self.text} user_id={self.user_id}>'
 
+    def as_dict(self):
+        return {'id': self.id, 'text': self.text}
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
