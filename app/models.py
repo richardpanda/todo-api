@@ -9,13 +9,14 @@ from sqlalchemy.orm import relationship
 class Todo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(100))
+    is_completed = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return f'<Todo id={self.id} text={self.text} user_id={self.user_id}>'
+        return f'<Todo id={self.id} text={self.text} is_completed={self.is_completed} user_id={self.user_id}>'
 
     def as_dict(self):
-        return {'id': self.id, 'text': self.text}
+        return {'id': self.id, 'text': self.text, 'is_completed': self.is_completed}
 
 
 class User(db.Model):
