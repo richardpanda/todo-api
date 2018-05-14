@@ -85,6 +85,34 @@ def signup():
     return jsonify(token=user.generate_jwt()), 201
 
 
+@api.route('/todo/<int:todo_id>', methods=['PUT'])
+@token_auth.login_required
+def update_todo(todo_id):
+    request_body = request.get_json()
+    text = request_body.get('text')
+    is_completed = request_body.get('is_completed')
+
+    if is_completed is None:
+        return jsonify(message='Completed is missing.'), 400
+
+    if not text:
+        return jsonify(message='Text is missing.'), 400
+
+    todo = Todo.query.filter_by(id=todo_id).first()
+
+    if not todo:
+        return jsonify(message='Todo not found.'), 404
+
+    if todo.user_id != g.user_id:
+        return jsonify(message='Unauthorized.'), 401
+
+    todo.text = text
+    todo.is_completed = is_completed
+    db.session.commit()
+
+    return jsonify(id=todo_id, text=text, is_completed=is_completed), 200
+
+
 @api.route('/todos', methods=['GET'])
 @token_auth.login_required
 def get_todos():
