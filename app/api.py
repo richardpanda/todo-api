@@ -85,6 +85,23 @@ def signup():
     return jsonify(token=user.generate_jwt()), 201
 
 
+@api.route('/todo/<int:todo_id>', methods=['DELETE'])
+@token_auth.login_required
+def delete_todo(todo_id):
+    todo = Todo.query.filter_by(id=todo_id).first()
+
+    if not todo:
+        return jsonify(message='Todo not found.'), 404
+
+    if todo.user_id != g.user_id:
+        return jsonify(message='Unauthorized.'), 401
+
+    db.session.delete(todo)
+    db.session.commit()
+
+    return jsonify(), 200
+
+
 @api.route('/todo/<int:todo_id>', methods=['PUT'])
 @token_auth.login_required
 def update_todo(todo_id):
